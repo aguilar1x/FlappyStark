@@ -53,8 +53,11 @@ export function RecordsScreen({ onNavigate }: RecordsScreenProps) {
   ]
 
   return (
-    <div className="min-h-screen p-4">
-      <div className="max-w-4xl mx-auto space-y-6">
+    <div className="min-h-screen p-4 relative overflow-hidden bg-gradient-to-b from-slate-900 via-blue-900 to-slate-900">
+      {/* Night Sky Background */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-800 via-slate-900 to-slate-900"></div>
+      
+      <div className="max-w-4xl mx-auto space-y-6 relative z-10">
         <NavigationHeader title="RECORDS" subtitle="Your best scores" onBack={() => onNavigate("menu")} />
 
         <TabNavigation
@@ -66,14 +69,15 @@ export function RecordsScreen({ onNavigate }: RecordsScreenProps) {
         {activeTab === "stats" && (
           <div className="space-y-6">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <StatCard value={stats.bestScore} label="Best Score" icon={Trophy} color="text-primary" />
-              <StatCard value={stats.totalTransactions} label="Transactions" icon={Zap} color="text-secondary" />
-              <StatCard value={stats.totalGamesPlayed} label="Games" icon={Target} color="text-accent" />
+              <StatCard value={stats.bestScore} label="Best Score" icon={Trophy} variant="dark" color="text-blue-900" />
+              <StatCard value={stats.totalTransactions} label="Transactions" icon={Zap} variant="dark" color="text-yellow-300" />
+              <StatCard value={stats.totalGamesPlayed} label="Games" icon={Target} variant="dark" color="text-blue-900" />
               <StatCard
                 value={formatDuration(stats.totalPlayTime)}
                 label="Total Time"
                 icon={Clock}
-                color="text-orange-500"
+                variant="dark"
+                color="text-blue-900"
               />
             </div>
           </div>
@@ -82,19 +86,19 @@ export function RecordsScreen({ onNavigate }: RecordsScreenProps) {
         {activeTab === "records" && (
           <div className="space-y-4">
             {records.length === 0 ? (
-              <Card className="p-12 text-center">
-                <Trophy className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-xl font-semibold mb-2">No records yet</h3>
-                <p className="text-muted-foreground mb-6">Play your first game to start creating records!</p>
-                <Button onClick={() => onNavigate("game")} className="bg-primary hover:bg-primary/90">
+              <Card className="p-12 text-center bg-sky-200 border-sky-300">
+                <Trophy className="h-16 w-16 mx-auto text-blue-900 mb-4" />
+                <h3 className="text-xl font-semibold mb-2 text-black">No records yet</h3>
+                <p className="text-black mb-6">Play your first game to start creating records!</p>
+                <Button onClick={() => onNavigate("game")} className="bg-blue-600 hover:bg-blue-700 text-white border-black hover:border-blue-900" style={{ borderColor: 'black' }}>
                   Play Now
                 </Button>
               </Card>
             ) : (
               <div className="space-y-3">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-semibold">Top {records.length} Games</h3>
-                  <p className="text-sm text-muted-foreground">Sorted by score</p>
+                  <h3 className="text-xl font-semibold text-white">Top {records.length} Games</h3>
+                  <p className="text-sm text-white">Sorted by score</p>
                 </div>
 
                 {records.map((record, index) => (

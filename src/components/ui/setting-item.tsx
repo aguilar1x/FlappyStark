@@ -16,7 +16,7 @@ export function SettingItem({ label, type, defaultValue, max = 100, step = 1, on
   if (type === "switch") {
     return (
       <div className="flex items-center justify-between">
-        <label className="text-sm font-medium">{label}</label>
+        <label className="text-sm font-medium text-black">{label}</label>
         <Switch defaultChecked={defaultValue as boolean} onCheckedChange={(checked) => onChange?.(checked)} />
       </div>
     )
@@ -25,7 +25,7 @@ export function SettingItem({ label, type, defaultValue, max = 100, step = 1, on
   if (type === "slider") {
     return (
       <div className="space-y-2">
-        <label className="text-sm font-medium">{label}</label>
+        <label className="text-sm font-medium text-black">{label}</label>
         <Slider
           defaultValue={defaultValue as number[]}
           max={max}
