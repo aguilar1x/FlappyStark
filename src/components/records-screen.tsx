@@ -51,7 +51,7 @@ export function RecordsScreen({ onNavigate }: RecordsScreenProps) {
   ]
 
   return (
-    <div className="min-h-screen p-4">
+    <div className="min-h-screen p-4 bg-gradient-to-b from-slate-900 via-blue-900 to-slate-900">
       <div className="max-w-4xl mx-auto space-y-6">
         <NavigationHeader title="RECORDS" subtitle="Global leaderboard" onBack={() => onNavigate("menu")} />
 
@@ -68,12 +68,12 @@ export function RecordsScreen({ onNavigate }: RecordsScreenProps) {
             ) : (
               <div className="space-y-3">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-semibold">Top {records.length} Players</h3>
-                  <p className="text-sm text-muted-foreground">Best score per player</p>
+                  <h3 className="text-xl font-bold text-white">Top {records.length} Players</h3>
+                  <p className="text-sm text-white">Best score per player</p>
                 </div>
 
                 {records.map((record, index) => (
-                  <Card key={record.id} className={`p-4 ${index < 3 ? "border-primary/50" : ""}`}>
+                  <Card key={`${record.id}_${record.userId}_${index}`} className={`p-4 ${index < 3 ? "border-primary/50" : ""}`}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <div

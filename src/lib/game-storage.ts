@@ -81,7 +81,7 @@ export function saveGameRecord(record: Omit<GameRecord, "id">): void {
   const records = getGameRecords()
   const newRecord: GameRecord = {
     ...record,
-    id: Date.now().toString(),
+    id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
   }
 
   // Check if user already has a record

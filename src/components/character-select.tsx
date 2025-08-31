@@ -81,10 +81,10 @@ export function CharacterSelect({ selectedCharacter, onSelectCharacter, onNaviga
         {/* Progress Indicator */}
         {isAuthenticated && (
           <div className="text-center space-y-2">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-white">
               Total Transactions: <span className="font-bold text-primary">{transactions.length}</span>
             </p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-white">
               Unlocked: {unlockedCharacters.filter(c => c.unlocked).length}/{CHARACTERS.length} characters
             </p>
           </div>

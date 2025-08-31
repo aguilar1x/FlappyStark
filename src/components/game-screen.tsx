@@ -352,7 +352,7 @@ export function GameScreen({ selectedCharacter, onNavigate }: GameScreenProps) {
             </div>
             <div className="text-center">
               <p className="text-2xl font-bold text-secondary">{userTransactions.length}</p>
-              <p className="text-xs text-muted-foreground">Transactions</p>
+              <p className="text-xs text-white">Transactions</p>
             </div>
             <div className="text-center">
               <p className="text-2xl font-bold text-yellow-300">Lv.{difficulty}</p>

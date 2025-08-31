@@ -15,7 +15,7 @@ interface NavigationHeaderProps {
 export function NavigationHeader({ title, subtitle, onBack, actions }: NavigationHeaderProps) {
   return (
     <div className="flex items-center justify-between">
-      <Button onClick={onBack} variant="outline" size="sm" className="border-black text-black hover:bg-blue-600 hover:text-blue-900 hover:border-blue-900" style={{ borderColor: 'black' }}>
+      <Button onClick={onBack} variant="outline" size="sm" className="border-white text-white hover:bg-blue-600 hover:text-blue-900 hover:border-blue-900" style={{ borderColor: 'black' }}>
         <ArrowLeft className="h-4 w-4 mr-2" />
         Back
       </Button>

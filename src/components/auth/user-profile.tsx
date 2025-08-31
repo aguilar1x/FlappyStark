@@ -33,7 +33,7 @@ export function UserProfile({ onNavigate }: UserProfileProps) {
   }
 
   return (
-    <div className="min-h-screen p-4">
+    <div className="min-h-screen p-4 bg-gradient-to-b from-slate-900 via-blue-900 to-slate-900">
       <div className="max-w-2xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -41,6 +41,8 @@ export function UserProfile({ onNavigate }: UserProfileProps) {
             onClick={() => onNavigate("menu")}
             variant="ghost"
             size="sm"
+            className="border-white text-white hover:bg-blue-600 hover:text-blue-900 hover:border-blue-900"
+            style={{ borderColor: 'white' }}
           >
             ← Back to Menu
           </Button>
@@ -51,6 +53,8 @@ export function UserProfile({ onNavigate }: UserProfileProps) {
               variant="outline"
               size="sm"
               disabled={authLoading}
+              className="border-white text-white hover:bg-blue-600 hover:text-blue-900 hover:border-blue-900"
+              style={{ borderColor: 'white' }}
             >
               <LogOut className="h-4 w-4 mr-2" />
               Logout
@@ -83,12 +87,12 @@ export function UserProfile({ onNavigate }: UserProfileProps) {
 
           {/* Wallet Info */}
           {user.walletAddress && (
-            <div className="p-4 bg-muted/50 rounded-lg">
+            <div className="p-4 bg-gray-800 rounded-lg">
               <div className="flex items-center space-x-2 mb-2">
-                <Wallet className="h-4 w-4 text-primary" />
-                <span className="font-medium">StarkNet Wallet</span>
+                <Wallet className="h-4 w-4 text-white" />
+                <span className="font-white text-white">StarkNet Wallet</span>
               </div>
-              <p className="text-sm font-mono text-muted-foreground break-all">
+              <p className="text-sm font-mono text-white break-all">
                 {user.walletAddress}
               </p>
             </div>
@@ -132,7 +136,7 @@ export function UserProfile({ onNavigate }: UserProfileProps) {
         )}
 
         {/* Footer */}
-        <div className="text-center text-xs text-muted-foreground">
+        <div className="text-center text-xs text-white">
           <p>Powered by Cavos - StarkNet Integration</p>
         </div>
       </div>
