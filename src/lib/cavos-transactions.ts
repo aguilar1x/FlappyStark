@@ -59,38 +59,45 @@ const TRANSACTION_CONFIG = {
   }
 }
 
-// Almacenamiento local de transacciones
-const TRANSACTIONS_KEY = 'flappystark_transactions'
+// Almacenamiento local de transacciones por usuario
+const getTransactionsKey = (userId?: string) => `flappystark_transactions_${userId || 'anonymous'}`
 
 export function saveTransaction(transaction: GameTransaction): void {
   if (typeof window === "undefined") return
   
-  const transactions = getTransactions()
+  const transactions = getTransactions(transaction.userId)
   transactions.push(transaction)
   
-  // Mantener solo las últimas 100 transacciones
-  if (transactions.length > 100) {
-    transactions.splice(0, transactions.length - 100)
+  // Mantener solo las últimas 10,000,000 transacciones
+  if (transactions.length > 10000000) {
+    transactions.splice(0, transactions.length - 10000000)
   }
   
-  localStorage.setItem(TRANSACTIONS_KEY, JSON.stringify(transactions))
+  const key = getTransactionsKey(transaction.userId)
+  localStorage.setItem(key, JSON.stringify(transactions))
 }
 
-export function getTransactions(): GameTransaction[] {
+export function getTransactions(userId?: string): GameTransaction[] {
   if (typeof window === "undefined") return []
   
-  const stored = localStorage.getItem(TRANSACTIONS_KEY)
-  if (!stored) return []
+  const key = getTransactionsKey(userId)
+  const stored = localStorage.getItem(key)
+  
+  if (!stored) {
+    return []
+  }
   
   try {
-    return JSON.parse(stored)
-  } catch {
+    const parsed = JSON.parse(stored)
+    return parsed
+  } catch (error) {
+    console.error('Error parsing transactions:', error)
     return []
   }
 }
 
-export function getTransactionStats(): TransactionStats {
-  const transactions = getTransactions()
+export function getTransactionStats(userId?: string): TransactionStats {
+  const transactions = getTransactions(userId)
   const completedTransactions = transactions.filter(t => t.status === 'completed')
   
   return {
@@ -107,6 +114,15 @@ export function getTransactionStats(): TransactionStats {
     totalRewardTransactions: completedTransactions.filter(t => t.type === 'reward').length,
     pendingTransactions: transactions.filter(t => t.status === 'pending').length
   }
+}
+
+// Función para limpiar transacciones (útil para debugging)
+export function clearTransactions(userId?: string): void {
+  if (typeof window === "undefined") return
+  
+  const key = getTransactionsKey(userId)
+  localStorage.removeItem(key)
+  console.log('🧹 Transactions cleared from localStorage for user:', userId)
 }
 
 // Calcular recompensa basada en el score y nivel
@@ -240,38 +256,4 @@ export async function processRewardTransaction(
   })
 }
 
-// Verificar estado de transacciones pendientes
-export async function checkPendingTransactions(): Promise<void> {
-  const transactions = getTransactions()
-  const pendingTransactions = transactions.filter(t => t.status === 'pending')
-  
-  if (pendingTransactions.length === 0) return
-  
-  try {
-    // En una implementación real, aquí verificaríamos el estado de las transacciones
-    // en la blockchain usando el hash de la transacción
-    for (const transaction of pendingTransactions) {
-      if (transaction.hash) {
-        // Simular verificación de transacción
-        // En producción, usaríamos un servicio para verificar el estado
-        transaction.status = 'completed'
-      }
-    }
-    
-    // Actualizar almacenamiento local
-    localStorage.setItem(TRANSACTIONS_KEY, JSON.stringify(transactions))
-  } catch (error) {
-    console.error('Check pending transactions error:', error)
-  }
-}
 
-// Sincronizar transacciones locales
-export async function syncTransactions(userId: string): Promise<void> {
-  try {
-    // En una implementación real, aquí sincronizaríamos con un backend
-    // que mantenga un registro de todas las transacciones del usuario
-    await checkPendingTransactions()
-  } catch (error) {
-    console.error('Sync transactions error:', error)
-  }
-}

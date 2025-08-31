@@ -3,12 +3,8 @@ import {
   GameTransaction, 
   TransactionStats,
   processScoreTransaction,
-  processAchievementTransaction,
-  processRewardTransaction,
   getTransactionStats,
-  getTransactions,
-  syncTransactions,
-  checkPendingTransactions
+  getTransactions
 } from '@/lib/cavos-transactions'
 
 export function useTransactions(userId?: string) {
@@ -30,9 +26,9 @@ export function useTransactions(userId?: string) {
   useEffect(() => {
     const loadTransactions = () => {
       try {
-        const localTransactions = getTransactions()
+        const localTransactions = getTransactions(userId)
         setTransactions(localTransactions)
-        setStats(getTransactionStats())
+        setStats(getTransactionStats(userId))
       } catch (error) {
         setError('Failed to load transactions')
         console.error('Load transactions error:', error)
@@ -40,34 +36,14 @@ export function useTransactions(userId?: string) {
     }
 
     loadTransactions()
-  }, [])
-
-  // Sincronizar con Cavos si hay usuario
-  useEffect(() => {
-    if (!userId) return
-
-    const syncWithCavos = async () => {
-      try {
-        setIsLoading(true)
-        setError(null)
-        
-        await syncTransactions(userId)
-        await checkPendingTransactions()
-        
-        // Recargar datos locales
-        const localTransactions = getTransactions()
-        setTransactions(localTransactions)
-        setStats(getTransactionStats())
-      } catch (error) {
-        setError('Failed to sync transactions')
-        console.error('Sync transactions error:', error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    syncWithCavos()
+    
+    // Recargar transacciones cada segundo para detectar cambios
+    const interval = setInterval(loadTransactions, 1000)
+    
+    return () => clearInterval(interval)
   }, [userId])
+
+
 
   // Procesar transacción de score
   const processScore = useCallback(async (score: number, level: number) => {
@@ -81,107 +57,14 @@ export function useTransactions(userId?: string) {
       
       const transaction = await processScoreTransaction(userId, score, level)
       
-      setTransactions(prev => [transaction, ...prev])
-      setStats(getTransactionStats())
+      // Recargar transacciones inmediatamente después de crear una nueva
+      const updatedTransactions = getTransactions(userId)
+      setTransactions(updatedTransactions)
+      setStats(getTransactionStats(userId))
       
       return transaction
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to process score transaction'
-      setError(errorMessage)
-      throw error
-    } finally {
-      setIsLoading(false)
-    }
-  }, [userId])
-
-  // Procesar transacción de logro
-  const processAchievement = useCallback(async (score: number, level: number, achievement: string) => {
-    if (!userId) {
-      throw new Error('User not authenticated')
-    }
-
-    try {
-      setIsLoading(true)
-      setError(null)
-      
-      const transaction = await processAchievementTransaction(userId, score, level, achievement)
-      
-      setTransactions(prev => [transaction, ...prev])
-      setStats(getTransactionStats())
-      
-      return transaction
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to process achievement transaction'
-      setError(errorMessage)
-      throw error
-    } finally {
-      setIsLoading(false)
-    }
-  }, [userId])
-
-  // Procesar transacción de recompensa
-  const processReward = useCallback(async (score: number, level: number, gameDuration: number) => {
-    if (!userId) {
-      throw new Error('User not authenticated')
-    }
-
-    try {
-      setIsLoading(true)
-      setError(null)
-      
-      const transaction = await processRewardTransaction(userId, score, level, gameDuration)
-      
-      setTransactions(prev => [transaction, ...prev])
-      setStats(getTransactionStats())
-      
-      return transaction
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to process reward transaction'
-      setError(errorMessage)
-      throw error
-    } finally {
-      setIsLoading(false)
-    }
-  }, [userId])
-
-  // Verificar transacciones pendientes
-  const checkPending = useCallback(async () => {
-    try {
-      setIsLoading(true)
-      setError(null)
-      
-      await checkPendingTransactions()
-      
-      // Recargar datos
-      const localTransactions = getTransactions()
-      setTransactions(localTransactions)
-      setStats(getTransactionStats())
-    } catch (error) {
-      setError('Failed to check pending transactions')
-      console.error('Check pending error:', error)
-    } finally {
-      setIsLoading(false)
-    }
-  }, [])
-
-  // Sincronizar transacciones
-  const sync = useCallback(async () => {
-    if (!userId) {
-      throw new Error('User not authenticated')
-    }
-
-    try {
-      setIsLoading(true)
-      setError(null)
-      
-      await syncTransactions(userId)
-      
-      // Recargar datos
-      const localTransactions = getTransactions()
-      setTransactions(localTransactions)
-      setStats(getTransactionStats())
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to sync transactions'
       setError(errorMessage)
       throw error
     } finally {
@@ -200,10 +83,6 @@ export function useTransactions(userId?: string) {
     isLoading,
     error,
     processScore,
-    processAchievement,
-    processReward,
-    checkPending,
-    sync,
     clearError
   }
 }

@@ -13,22 +13,12 @@ interface UserProfileProps {
 }
 
 export function UserProfile({ onNavigate }: UserProfileProps) {
-  const { user, logout, refresh, isLoading: authLoading } = useAuth()
-  const { stats, sync, isLoading: txLoading } = useTransactions(user?.id)
-
-  useEffect(() => {
-    if (user?.id) {
-      sync()
-    }
-  }, [user?.id, sync])
+  const { user, logout, isLoading: authLoading } = useAuth()
+  const { stats, isLoading: txLoading } = useTransactions(user?.id)
 
   const handleLogout = async () => {
     await logout()
     onNavigate("menu")
-  }
-
-  const handleRefresh = async () => {
-    await refresh()
   }
 
   if (!user) {
@@ -55,17 +45,7 @@ export function UserProfile({ onNavigate }: UserProfileProps) {
             ← Back to Menu
           </Button>
           
-          <div className="flex gap-2">
-            <Button
-              onClick={handleRefresh}
-              variant="outline"
-              size="sm"
-              disabled={authLoading}
-            >
-              <RefreshCw className={`h-4 w-4 mr-2 ${authLoading ? 'animate-spin' : ''}`} />
-              Refresh
-            </Button>
-            
+          <div className="flex gap-2">          
             <Button
               onClick={handleLogout}
               variant="outline"

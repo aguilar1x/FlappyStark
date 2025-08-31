@@ -12,6 +12,8 @@ export interface GameStats {
 
 export interface GameRecord {
   id: string
+  userId: string
+  username: string
   score: number
   transactions: number
   level: number
@@ -19,13 +21,13 @@ export interface GameRecord {
   duration: number
 }
 
-const STORAGE_KEYS = {
-  STATS: "flappystark_stats",
-  RECORDS: "flappystark_records",
-  SETTINGS: "flappystark_settings",
-}
+const getStorageKeys = (userId?: string) => ({
+  STATS: `flappystark_stats_${userId || 'anonymous'}`,
+  RECORDS: `flappystark_records_global`, // Global records for all users
+  SETTINGS: `flappystark_settings_${userId || 'anonymous'}`,
+})
 
-export function getGameStats(): GameStats {
+export function getGameStats(userId?: string): GameStats {
   if (typeof window === "undefined") {
     return {
       bestScore: 0,
@@ -39,7 +41,8 @@ export function getGameStats(): GameStats {
     }
   }
 
-  const stored = localStorage.getItem(STORAGE_KEYS.STATS)
+  const keys = getStorageKeys(userId)
+  const stored = localStorage.getItem(keys.STATS)
   if (!stored) {
     return {
       bestScore: 0,
@@ -56,15 +59,17 @@ export function getGameStats(): GameStats {
   return JSON.parse(stored)
 }
 
-export function saveGameStats(stats: GameStats): void {
+export function saveGameStats(stats: GameStats, userId?: string): void {
   if (typeof window === "undefined") return
-  localStorage.setItem(STORAGE_KEYS.STATS, JSON.stringify(stats))
+  const keys = getStorageKeys(userId)
+  localStorage.setItem(keys.STATS, JSON.stringify(stats))
 }
 
 export function getGameRecords(): GameRecord[] {
   if (typeof window === "undefined") return []
 
-  const stored = localStorage.getItem(STORAGE_KEYS.RECORDS)
+  const keys = getStorageKeys()
+  const stored = localStorage.getItem(keys.RECORDS)
   if (!stored) return []
 
   return JSON.parse(stored)
@@ -79,13 +84,32 @@ export function saveGameRecord(record: Omit<GameRecord, "id">): void {
     id: Date.now().toString(),
   }
 
-  records.push(newRecord)
+  // Check if user already has a record
+  const existingUserIndex = records.findIndex(r => r.userId === record.userId)
+  
+  if (existingUserIndex !== -1) {
+    // User already has a record, check if new score is better
+    const existingRecord = records[existingUserIndex]
+    if (newRecord.score > existingRecord.score) {
+      // Replace with better score
+      records[existingUserIndex] = newRecord
+    } else {
+      // New score is not better, don't save it
+      return
+    }
+  } else {
+    // New user, add their record
+    records.push(newRecord)
+  }
+
+  // Sort by score (highest first)
   records.sort((a, b) => b.score - a.score)
 
   // Keep only top 50 records
   const trimmedRecords = records.slice(0, 50)
 
-  localStorage.setItem(STORAGE_KEYS.RECORDS, JSON.stringify(trimmedRecords))
+  const keys = getStorageKeys()
+  localStorage.setItem(keys.RECORDS, JSON.stringify(trimmedRecords))
 }
 
 export function updateGameStats(gameResult: {
@@ -93,8 +117,10 @@ export function updateGameStats(gameResult: {
   transactions: number
   level: number
   duration: number
-}): void {
-  const stats = getGameStats()
+  userId: string
+  username: string
+}, userId?: string): void {
+  const stats = getGameStats(userId)
 
   stats.totalGamesPlayed += 1
   stats.totalTransactions += gameResult.transactions
@@ -113,8 +139,10 @@ export function updateGameStats(gameResult: {
     (stats.averageScore * (stats.totalGamesPlayed - 1) + gameResult.score) / stats.totalGamesPlayed,
   )
 
-  saveGameStats(stats)
+  saveGameStats(stats, userId)
   saveGameRecord({
+    userId: gameResult.userId,
+    username: gameResult.username,
     score: gameResult.score,
     transactions: gameResult.transactions,
     level: gameResult.level,

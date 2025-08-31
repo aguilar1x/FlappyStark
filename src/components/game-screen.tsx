@@ -10,6 +10,7 @@ import { updateGameStats, getGameStats } from "@/lib/game-storage"
 import { useAuth } from "@/hooks/use-auth"
 import { useTransactions } from "@/hooks/use-transactions"
 
+
 interface GameScreenProps {
   selectedCharacter: string
   onNavigate: (screen: "menu" | "character-select" | "game" | "options" | "records" | "login") => void
@@ -36,14 +37,14 @@ export function GameScreen({ selectedCharacter, onNavigate }: GameScreenProps) {
   const gameStartTimeRef = useRef<number>(0)
 
   const { user, isAuthenticated } = useAuth()
-  const { processScore, processAchievement, processReward, stats } = useTransactions(user?.id)
+  const { processScore, stats, transactions: userTransactions } = useTransactions(user?.id)
 
   const [gameState, setGameState] = useState<GameState>("waiting")
   const [score, setScore] = useState(0)
   const [transactions, setTransactions] = useState(0)
   const [bird, setBird] = useState<Bird>({ x: 100, y: 200, velocity: 0 })
   const [pipes, setPipes] = useState<Pipe[]>([])
-  const [bestScore, setBestScore] = useState(() => getGameStats().bestScore)
+  const [bestScore, setBestScore] = useState(() => getGameStats(user?.id).bestScore)
   const [difficulty, setDifficulty] = useState(1)
   const [currentSpeed, setCurrentSpeed] = useState(2)
   const [currentGap, setCurrentGap] = useState(150)
@@ -167,14 +168,13 @@ export function GameScreen({ selectedCharacter, onNavigate }: GameScreenProps) {
             transactions,
             level: difficulty,
             duration,
-          })
+            userId: user?.id || '',
+            username: user?.username || 'Anonymous',
+          }, user?.id)
           
-          // Procesar transacción de recompensa si el usuario está autenticado
-          if (isAuthenticated && user?.id && score > 0) {
-            processReward(score, difficulty, duration).catch(console.error)
-          }
+
           
-          const newStats = getGameStats()
+          const newStats = getGameStats(user?.id)
           setBestScore(newStats.bestScore)
           return prev
         }
@@ -251,6 +251,8 @@ export function GameScreen({ selectedCharacter, onNavigate }: GameScreenProps) {
     ctx.fillRect(0, CANVAS_HEIGHT - 20, CANVAS_WIDTH, 20)
   }, [bird, pipes])
 
+
+
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.code === "Space") {
@@ -302,7 +304,7 @@ export function GameScreen({ selectedCharacter, onNavigate }: GameScreenProps) {
               <p className="text-xs text-muted-foreground">Score</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-bold text-secondary">{stats.totalTransactions}</p>
+              <p className="text-2xl font-bold text-secondary">{userTransactions.length}</p>
               <p className="text-xs text-muted-foreground">Transactions</p>
             </div>
             <div className="text-center">
@@ -323,6 +325,7 @@ export function GameScreen({ selectedCharacter, onNavigate }: GameScreenProps) {
             <Button onClick={restart} variant="outline" size="sm">
               <RotateCcw className="h-4 w-4" />
             </Button>
+
           </div>
         </div>
 
@@ -353,7 +356,7 @@ export function GameScreen({ selectedCharacter, onNavigate }: GameScreenProps) {
           <GameOverlay visible={gameState === "gameOver"}>
             <p className="text-2xl font-semibold">GAME OVER</p>
             <p className="text-lg">Score: {score}</p>
-            <p className="text-lg">Transactions: {stats.totalTransactions}</p>
+            <p className="text-lg">Transactions: {userTransactions.length}</p>
             <p className="text-md">Level Reached: {difficulty}</p>
             <Button onClick={restart} variant="secondary">
               <RotateCcw className="h-4 w-4 mr-2" />
@@ -370,7 +373,7 @@ export function GameScreen({ selectedCharacter, onNavigate }: GameScreenProps) {
         </Card>
 
         <div className="grid grid-cols-3 gap-4">
-          <StatCard value={stats.totalTransactions} label="Total Transactions" color="text-primary" size="sm" />
+          <StatCard value={userTransactions.length} label="Total Transactions" color="text-primary" size="sm" />
           <StatCard value={bestScore} label="Best Score" color="text-accent" size="sm" />
           <StatCard value={`x${currentSpeed.toFixed(1)}`} label="Speed" color="text-orange-500" size="sm" />
         </div>

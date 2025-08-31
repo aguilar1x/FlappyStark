@@ -48,14 +48,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate network
-    const validNetworks = ["sepolia", "mainnet"];
+                 // Validate network
+             const validNetworks = ["mainnet", "sepolia"];
     if (!validNetworks.includes(network)) {
       console.log("❌ Invalid network:", network);
       return NextResponse.json(
-        {
-          error: "Invalid network. Must be one of: sepolia, mainnet",
-        },
+                         {
+                   error: "Invalid network. Must be one of: mainnet, sepolia",
+                 },
         { status: 400 }
       );
     }
@@ -90,6 +90,14 @@ export async function POST(request: NextRequest) {
     console.log("🔐 CavosAuth initialized for network:", network);
 
         console.log("📤 Calling CavosAuth.executeCalls...");
+    console.log("📋 Execute params:", {
+      walletAddress,
+      network,
+      callsCount: calls.length,
+      hasAccessToken: !!accessToken,
+      appId: appId ? 'configured' : 'missing'
+    });
+    
     const result = await cavosAuth.executeCalls(
       walletAddress,
       calls,
