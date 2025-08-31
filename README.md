@@ -54,7 +54,7 @@ Edita `.env.local` con tus credenciales:
 # Cavos Configuration
 NEXT_PUBLIC_CAVOS_APP_ID=tu-app-id-de-cavos
 NEXT_PUBLIC_CAVOS_ORG_SECRET=tu-org-secret-de-cavos
-NEXT_PUBLIC_CAVOS_NETWORK=sepolia
+NEXT_PUBLIC_CAVOS_NETWORK=mainnet
 
 # Development settings
 NODE_ENV=development
@@ -65,7 +65,7 @@ NODE_ENV=development
 1. Ve a [Cavos Services](https://services.cavos.xyz)
 2. Crea una nueva aplicación
 3. Copia el `App ID` y `Organization Secret`
-4. Configura la red (sepolia para desarrollo, mainnet para producción)
+4. Configura la red (mainnet para producción)
 
 ## 🎮 Cómo jugar
 
@@ -168,7 +168,7 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más det
 Si tienes problemas:
 
 1. Verifica que las credenciales de Cavos estén correctas
-2. Asegúrate de estar en la red correcta (sepolia/mainnet)
+2. Asegúrate de estar en la red correcta (mainnet)
 3. Revisa la consola del navegador para errores
 4. Consulta la [documentación de Cavos](https://docs.cavos.xyz)
 

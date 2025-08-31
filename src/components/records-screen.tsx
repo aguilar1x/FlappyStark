@@ -3,11 +3,10 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { StatCard } from "@/components/ui/stat-card"
 import { NavigationHeader } from "@/components/ui/navigation-header"
-import { TabNavigation } from "@/components/ui/tab-navigation"
-import { Trophy, Zap, Clock, Target, TrendingUp } from "lucide-react"
+import { Trophy} from "lucide-react"
 import { getGameStats, getGameRecords, type GameStats, type GameRecord } from "@/lib/game-storage"
+import { useAuth } from "@/hooks/use-auth"
 
 interface RecordsScreenProps {
   onNavigate: (screen: "menu" | "character-select" | "game" | "options" | "records") => void
@@ -16,12 +15,12 @@ interface RecordsScreenProps {
 export function RecordsScreen({ onNavigate }: RecordsScreenProps) {
   const [stats, setStats] = useState<GameStats | null>(null)
   const [records, setRecords] = useState<GameRecord[]>([])
-  const [activeTab, setActiveTab] = useState<"stats" | "records">("stats")
+  const { user } = useAuth()
 
   useEffect(() => {
-    setStats(getGameStats())
+    setStats(getGameStats(user?.id))
     setRecords(getGameRecords())
-  }, [])
+  }, [user?.id])
 
   const formatDuration = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600)
@@ -48,57 +47,29 @@ export function RecordsScreen({ onNavigate }: RecordsScreenProps) {
   }
 
   const tabs = [
-    { id: "stats", label: "Personal", icon: <TrendingUp className="h-4 w-4 mr-2" /> },
-    { id: "records", label: "Global", icon: <Trophy className="h-4 w-4 mr-2" /> },
+    { id: "records", label: "Leaderboard", icon: <Trophy className="h-4 w-4 mr-2" /> },
   ]
 
   return (
-    <div className="min-h-screen p-4 relative overflow-hidden bg-gradient-to-b from-slate-900 via-blue-900 to-slate-900">
-      {/* Night Sky Background */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-800 via-slate-900 to-slate-900"></div>
-      
-      <div className="max-w-4xl mx-auto space-y-6 relative z-10">
-        <NavigationHeader title="RECORDS" subtitle="Your best scores" onBack={() => onNavigate("menu")} />
+    <div className="min-h-screen p-4">
+      <div className="max-w-4xl mx-auto space-y-6">
+        <NavigationHeader title="RECORDS" subtitle="Global leaderboard" onBack={() => onNavigate("menu")} />
 
-        <TabNavigation
-          tabs={tabs}
-          activeTab={activeTab}
-          onTabChange={(tabId) => setActiveTab(tabId as "stats" | "records")}
-        />
-
-        {activeTab === "stats" && (
-          <div className="space-y-6">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <StatCard value={stats.bestScore} label="Best Score" icon={Trophy} variant="dark" color="text-blue-900" />
-              <StatCard value={stats.totalTransactions} label="Transactions" icon={Zap} variant="dark" color="text-yellow-300" />
-              <StatCard value={stats.totalGamesPlayed} label="Games" icon={Target} variant="dark" color="text-blue-900" />
-              <StatCard
-                value={formatDuration(stats.totalPlayTime)}
-                label="Total Time"
-                icon={Clock}
-                variant="dark"
-                color="text-blue-900"
-              />
-            </div>
-          </div>
-        )}
-
-        {activeTab === "records" && (
-          <div className="space-y-4">
-            {records.length === 0 ? (
-              <Card className="p-12 text-center bg-sky-200 border-sky-300">
-                <Trophy className="h-16 w-16 mx-auto text-blue-900 mb-4" />
-                <h3 className="text-xl font-semibold mb-2 text-black">No records yet</h3>
-                <p className="text-black mb-6">Play your first game to start creating records!</p>
-                <Button onClick={() => onNavigate("game")} className="bg-blue-600 hover:bg-blue-700 text-white border-black hover:border-blue-900" style={{ borderColor: 'black' }}>
+        <div className="space-y-4">
+          {records.length === 0 ? (
+              <Card className="p-12 text-center">
+                <Trophy className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+                <h3 className="text-xl font-semibold mb-2">No records yet</h3>
+                <p className="text-muted-foreground mb-6">Play your first game to start creating records!</p>
+                <Button onClick={() => onNavigate("game")} className="bg-primary hover:bg-primary/90">
                   Play Now
                 </Button>
               </Card>
             ) : (
               <div className="space-y-3">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-semibold text-white">Top {records.length} Games</h3>
-                  <p className="text-sm text-white">Sorted by score</p>
+                  <h3 className="text-xl font-semibold">Top {records.length} Players</h3>
+                  <p className="text-sm text-muted-foreground">Best score per player</p>
                 </div>
 
                 {records.map((record, index) => (
@@ -125,9 +96,12 @@ export function RecordsScreen({ onNavigate }: RecordsScreenProps) {
                             <span className="text-sm text-muted-foreground">{record.transactions} tx</span>
                             <span className="text-sm text-muted-foreground">Lv.{record.level}</span>
                           </div>
-                          <p className="text-xs text-muted-foreground">
-                            {formatDate(record.date)} • {formatDuration(record.duration)}
-                          </p>
+                          <div className="flex items-center gap-2">
+                            <p className="text-xs text-muted-foreground">
+                              {formatDate(record.date)} • {formatDuration(record.duration)}
+                            </p>
+                            <span className="text-xs font-medium text-primary">by {record.username}</span>
+                          </div>
                         </div>
                       </div>
 
@@ -144,7 +118,6 @@ export function RecordsScreen({ onNavigate }: RecordsScreenProps) {
               </div>
             )}
           </div>
-        )}
       </div>
     </div>
   )

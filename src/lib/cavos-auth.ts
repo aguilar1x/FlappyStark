@@ -32,7 +32,7 @@ export interface RegisterCredentials {
 const CAVOS_CONFIG = {
   appId: process.env.NEXT_PUBLIC_CAVOS_APP_ID || '',
   orgSecret: process.env.NEXT_PUBLIC_CAVOS_ORG_SECRET || '',
-  network: process.env.NEXT_PUBLIC_CAVOS_NETWORK || 'sepolia',
+  network: process.env.NEXT_PUBLIC_CAVOS_NETWORK || 'mainnet',
 }
 
 // Instancia del servicio Cavos
@@ -40,6 +40,11 @@ let cavosAuth: CavosAuth | null = null
 
 export function getCavosAuth(): CavosAuth {
   if (!cavosAuth) {
+    console.log('🔧 Initializing CavosAuth with:', {
+      network: CAVOS_CONFIG.network,
+      appId: CAVOS_CONFIG.appId ? 'configured' : 'missing',
+      orgSecret: CAVOS_CONFIG.orgSecret ? 'configured' : 'missing'
+    })
     cavosAuth = new CavosAuth(CAVOS_CONFIG.network, CAVOS_CONFIG.appId)
   }
   return cavosAuth
