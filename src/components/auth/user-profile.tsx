@@ -3,10 +3,9 @@
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { StatCard } from "@/components/ui/stat-card"
-import { User, Wallet, Calendar, LogOut, RefreshCw, Loader2 } from "lucide-react"
+import { User, Wallet, Calendar, LogOut, Loader2 } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth"
 import { useTransactions } from "@/hooks/use-transactions"
-import { useEffect } from "react"
 
 interface UserProfileProps {
   onNavigate: (screen: string) => void

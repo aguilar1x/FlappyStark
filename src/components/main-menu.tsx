@@ -15,7 +15,7 @@ interface MainMenuProps {
 
 export function MainMenu({ onNavigate }: MainMenuProps) {
   const [stats, setStats] = useState<GameStats | null>(null)
-  const [isClient, setIsClient] = useState(false)
+  const [isClient, _setIsClient] = useState(false)
   const { user, isAuthenticated } = useAuth()
   const { transactions } = useTransactions(user?.id)
 

@@ -12,7 +12,7 @@ interface RegisterFormProps {
 }
 
 export function RegisterForm({ onNavigate, onSuccess }: RegisterFormProps) {
-  const { register, isLoading, error, clearError } = useAuth()
+  const { register, isLoading, error: _error, clearError } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [formData, setFormData] = useState({
@@ -45,7 +45,7 @@ export function RegisterForm({ onNavigate, onSuccess }: RegisterFormProps) {
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
-    if (error) clearError()
+    if (_error) clearError()
   }
 
   const isFormValid = () => {
@@ -193,9 +193,9 @@ export function RegisterForm({ onNavigate, onSuccess }: RegisterFormProps) {
             </div>
 
             {/* Error Message */}
-            {error && (
+            {_error && (
               <div className="p-3 bg-red-100 border border-red-300 rounded-md">
-                <p className="text-sm text-red-700">{error}</p>
+                <p className="text-sm text-red-700">{_error}</p>
               </div>
             )}
 

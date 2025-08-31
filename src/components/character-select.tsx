@@ -6,6 +6,7 @@ import { NavigationHeader } from "@/components/ui/navigation-header"
 import { Check, Lock } from "lucide-react"
 import { useAuth } from "@/hooks/use-auth"
 import { useTransactions } from "@/hooks/use-transactions"
+import Image from "next/image"
 
 interface CharacterSelectProps {
   selectedCharacter: string
@@ -28,7 +29,7 @@ const CHARACTERS = [
     name: "Starknet Bird",
     description: "Bird of Starknet",
     color: "bg-secondary",
-    requirement: 10,
+    requirement: 200,
     image: "/favicon.png",
   },
   {
@@ -36,7 +37,7 @@ const CHARACTERS = [
     name: "Shark Pepe",
     description: "The fierce Shark Pepe",
     color: "bg-accent",
-    requirement: 100,
+    requirement: 350,
     image: "/SharkPepe.png",
   },
   {
@@ -93,7 +94,7 @@ export function CharacterSelect({ selectedCharacter, onSelectCharacter, onNaviga
 
         {/* Character Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {unlockedCharacters.map((character: any) => (
+          {unlockedCharacters.map((character) => (
             <Card
               key={character.id}
               className={`p-6 cursor-pointer transition-all duration-300 hover:scale-105 bg-sky-200 border-sky-300 ${
@@ -112,9 +113,11 @@ export function CharacterSelect({ selectedCharacter, onSelectCharacter, onNaviga
                         className="w-full h-full rounded-full flex items-center justify-center"
                         style={{ backgroundColor: 'white' }}
                       >
-                        <img 
+                        <Image 
                           src={character.image} 
                           alt={character.name}
+                          width={96}
+                          height={96}
                           className="w-full h-full object-contain"
                           style={{ 
                             imageRendering: 'pixelated'
@@ -178,7 +181,7 @@ export function CharacterSelect({ selectedCharacter, onSelectCharacter, onNaviga
         {/* Action Buttons */}
         <div className="flex justify-center gap-4 pt-6">
           <Button onClick={() => onNavigate("game")} className="px-8 py-3 text-lg bg-primary hover:bg-primary/90">
-            Play with {unlockedCharacters.find((c: any) => c.id === selectedCharacter)?.name}
+            Play with {unlockedCharacters.find((c) => c.id === selectedCharacter)?.name}
           </Button>
         </div>
       </div>

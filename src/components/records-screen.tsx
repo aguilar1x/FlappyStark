@@ -46,7 +46,7 @@ export function RecordsScreen({ onNavigate }: RecordsScreenProps) {
     return <div>Loading...</div>
   }
 
-  const tabs = [
+  const _tabs = [
     { id: "records", label: "Leaderboard", icon: <Trophy className="h-4 w-4 mr-2" /> },
   ]
 

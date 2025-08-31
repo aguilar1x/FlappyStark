@@ -282,7 +282,7 @@ export async function refreshSession(): Promise<User | null> {
 }
 
 // Función para ejecutar transacciones usando nuestra API route
-export async function executeTransaction(calls: any[]): Promise<{ txHash?: string; transactionHash?: string; accessToken?: string }> {
+export async function executeTransaction(calls: unknown[]): Promise<{ txHash?: string; transactionHash?: string; accessToken?: string }> {
   const session = getSession()
   if (!session.accessToken || !session.walletAddress) {
     throw new Error('No active session')
@@ -353,10 +353,10 @@ export async function executeTransaction(calls: any[]): Promise<{ txHash?: strin
       console.error('Error type:', typeof error)
       console.error('Error message:', error instanceof Error ? error.message : 'Not an Error object')
       
-      // Si el error es 401, intentar refrescar el token y reintentar
-      if ((error as any)?.status === 401 || 
-          (error instanceof Error && error.message.includes('401')) ||
-          (error instanceof Error && error.message.includes('Unauthorized'))) {
+              // Si el error es 401, intentar refrescar el token y reintentar
+        if ((error as { status?: number })?.status === 401 || 
+            (error instanceof Error && error.message.includes('401')) ||
+            (error instanceof Error && error.message.includes('Unauthorized'))) {
       console.log('Token expired, attempting to refresh...')
       
               try {
@@ -394,11 +394,11 @@ export async function executeTransaction(calls: any[]): Promise<{ txHash?: strin
       }
     }
     
-    console.error('Error details:', {
-      message: error instanceof Error ? error.message : 'Unknown error',
-      status: (error as any)?.status,
-      response: (error as any)?.response
-    })
+          console.error('Error details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        status: (error as { status?: number })?.status,
+        response: (error as { response?: unknown })?.response
+      })
     throw error
   }
 }

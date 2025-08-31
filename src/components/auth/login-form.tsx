@@ -12,7 +12,7 @@ interface LoginFormProps {
 }
 
 export function LoginForm({ onNavigate, onSuccess }: LoginFormProps) {
-  const { login, isLoading, error, clearError } = useAuth()
+  const { login, isLoading, error: _error, clearError } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
   const [formData, setFormData] = useState({
     email: "",
@@ -36,7 +36,7 @@ export function LoginForm({ onNavigate, onSuccess }: LoginFormProps) {
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
-    if (error) clearError()
+    if (_error) clearError()
   }
 
   return (
@@ -114,9 +114,9 @@ export function LoginForm({ onNavigate, onSuccess }: LoginFormProps) {
             </div>
 
             {/* Error Message */}
-            {error && (
+            {_error && (
               <div className="p-3 bg-red-100 border border-red-300 rounded-md">
-                <p className="text-sm text-red-700">{error}</p>
+                <p className="text-sm text-red-700">{_error}</p>
               </div>
             )}
 
@@ -150,7 +150,7 @@ export function LoginForm({ onNavigate, onSuccess }: LoginFormProps) {
           {/* Register Link */}
           <div className="text-center">
             <p className="text-sm text-blue-900">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <button
                 onClick={() => onNavigate("register")}
                 className="text-yellow-600 hover:text-yellow-700 hover:underline font-medium"

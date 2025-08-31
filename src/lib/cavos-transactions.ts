@@ -1,7 +1,7 @@
 import { executeTransaction } from './cavos-auth'
 
 // Helper function para convertir números a formato hexadecimal para calldata
-function toHexString(value: string | number): string {
+function _toHexString(value: string | number): string {
   const num = BigInt(value)
   return num.toString(16) // Sin prefijo 0x para calldata
 }
@@ -17,7 +17,7 @@ export interface GameTransaction {
   timestamp: string
   status: 'pending' | 'completed' | 'failed'
   hash?: string
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 }
 
 export interface TransactionRequest {
@@ -25,7 +25,7 @@ export interface TransactionRequest {
   amount: number
   score: number
   level: number
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 }
 
 export interface TransactionStats {

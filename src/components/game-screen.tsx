@@ -33,15 +33,15 @@ type GameState = "waiting" | "playing" | "paused" | "gameOver"
 
 export function GameScreen({ selectedCharacter, onNavigate }: GameScreenProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const animationRef = useRef<number | undefined>(undefined)
+  const _animationRef = useRef<number | undefined>(undefined)
   const gameStartTimeRef = useRef<number>(0)
 
   const { user, isAuthenticated } = useAuth()
-  const { processScore, stats, transactions: userTransactions } = useTransactions(user?.id)
+  const { processScore, stats: _stats, transactions: userTransactions } = useTransactions(user?.id)
 
   const [gameState, setGameState] = useState<GameState>("waiting")
   const [score, setScore] = useState(0)
-  const [transactions, setTransactions] = useState(0)
+  const [transactions, _setTransactions] = useState(0)
   const [bird, setBird] = useState<Bird>({ x: 100, y: 200, velocity: 0 })
   const [pipes, setPipes] = useState<Pipe[]>([])
   const [bestScore, setBestScore] = useState(() => getGameStats(user?.id).bestScore)
