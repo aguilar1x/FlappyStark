@@ -310,19 +310,10 @@ export function GameScreen({ selectedCharacter, onNavigate }: GameScreenProps) {
       }
     }
 
-    const handleClick = () => jump()
-
     window.addEventListener("keydown", handleKeyPress)
-    const canvas = canvasRef.current
-    if (canvas) {
-      canvas.addEventListener("click", handleClick)
-    }
 
     return () => {
       window.removeEventListener("keydown", handleKeyPress)
-      if (canvas) {
-        canvas.removeEventListener("click", handleClick)
-      }
     }
   }, [jump])
 
@@ -337,6 +328,20 @@ export function GameScreen({ selectedCharacter, onNavigate }: GameScreenProps) {
   const restart = () => {
     initGame()
   }
+
+  // Manejador para el click en el canvas
+  const handleCanvasClick = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    jump()
+  }, [jump])
+
+  // Manejador para el click en el contenedor del canvas
+  const handleContainerClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    jump()
+  }, [jump])
 
   return (
     <div className="min-h-screen p-4 bg-gradient-to-b from-slate-900 via-blue-900 to-slate-900">
@@ -380,13 +385,14 @@ export function GameScreen({ selectedCharacter, onNavigate }: GameScreenProps) {
           </div>
         </div>
 
-        <Card className="relative overflow-hidden bg-sky-200 border-sky-300">
+        <Card className="relative overflow-hidden bg-sky-200 border-sky-300" onClick={handleContainerClick}>
           <canvas
             ref={canvasRef}
             width={CANVAS_WIDTH}
             height={CANVAS_HEIGHT}
-            className="w-full h-auto cursor-pointer"
-            style={{ aspectRatio: `${CANVAS_WIDTH}/${CANVAS_HEIGHT}` }}
+            className="w-full h-auto cursor-pointer select-none"
+            style={{ aspectRatio: `${CANVAS_WIDTH}/${CANVAS_HEIGHT}`, userSelect: 'none' }}
+            onClick={handleCanvasClick}
           />
 
           <GameOverlay visible={gameState === "waiting"}>
