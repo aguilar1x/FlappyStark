@@ -50,7 +50,7 @@ const CHARACTERS = [
   {
     id: "bird-5", 
     name: "StarkGlass",
-    description: "Legendary dragon of StarkNet",
+    description: "Almost invisible like a Ninja",
     color: "bg-gradient-to-r from-purple-500 to-pink-500",
     requirement: 1000,
     image: "/stark.png",
@@ -58,7 +58,7 @@ const CHARACTERS = [
   {
     id: "bird-6",
     name: "Secret", 
-    description: "Master of all transactions",
+    description: "A LEGEND",
     color: "bg-gradient-to-r from-yellow-400 to-orange-500",
     requirement: 5000,
   },
