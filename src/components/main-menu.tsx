@@ -15,6 +15,7 @@ interface MainMenuProps {
 
 export function MainMenu({ onNavigate }: MainMenuProps) {
   const [stats, setStats] = useState<GameStats | null>(null)
+  const [isClient, setIsClient] = useState(false)
   const { user, isAuthenticated } = useAuth()
   const { transactions } = useTransactions(user?.id)
 
@@ -23,25 +24,102 @@ export function MainMenu({ onNavigate }: MainMenuProps) {
   }, [user?.id])
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-8">
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-gradient-to-b from-slate-900 via-blue-900 to-slate-900">
+      {/* Night Sky Background */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-800 via-slate-900 to-slate-900"></div>
+      
+      {/* Night Clouds */}
+      {isClient && (
+        <div className="absolute inset-0 overflow-hidden">
+          {[...Array(6)].map((_, i) => {
+            const cloudData = {
+              top: 10 + Math.random() * 70,
+              delay: Math.random() * 20,
+              duration: 30 + Math.random() * 20,
+              parts: [
+                { width: 80 + Math.random() * 120, height: 50 + Math.random() * 80, left: 0, top: 0 },
+                { width: 60 + Math.random() * 80, height: 40 + Math.random() * 60, left: 20 + Math.random() * 40, top: -20 + Math.random() * 20 },
+                { width: 50 + Math.random() * 70, height: 35 + Math.random() * 50, left: -15 + Math.random() * 30, top: 10 + Math.random() * 20 },
+                { width: 40 + Math.random() * 60, height: 30 + Math.random() * 40, left: 40 + Math.random() * 50, top: 15 + Math.random() * 25 }
+              ]
+            }
+            
+            return (
+              <div
+                key={i}
+                className="absolute animate-cloud-move"
+                style={{
+                  top: `${cloudData.top}%`,
+                  left: '-300px',
+                  animationDelay: `${cloudData.delay}s`,
+                  animationDuration: `${cloudData.duration}s`,
+                }}
+              >
+                <div className="relative">
+                  {cloudData.parts.map((part, j) => (
+                    <div 
+                      key={j}
+                      className="absolute bg-gray-300/40 rounded-full"
+                      style={{
+                        width: `${part.width}px`,
+                        height: `${part.height}px`,
+                        left: `${part.left}px`,
+                        top: `${part.top}px`,
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
+
+
+
+      {/* Stars */}
+      {isClient && (
+        <div className="absolute inset-0">
+          {[...Array(80)].map((_, i) => {
+            const starData = {
+              left: Math.random() * 100,
+              top: Math.random() * 100,
+              delay: Math.random() * 3,
+              duration: 2 + Math.random() * 3
+            }
+            
+            return (
+              <div
+                key={i}
+                className="absolute w-1 h-1 bg-white rounded-full animate-pulse"
+                style={{
+                  left: `${starData.left}%`,
+                  top: `${starData.top}%`,
+                  animationDelay: `${starData.delay}s`,
+                  animationDuration: `${starData.duration}s`,
+                }}
+              />
+            )
+          })}
+        </div>
+      )}
+
+      {/* Moon */}
+      <div className="absolute top-8 right-8 w-16 h-16 bg-yellow-200 rounded-full shadow-lg shadow-yellow-200/50 animate-pulse"></div>
+
+      <div className="w-full max-w-md space-y-8 relative z-10">
         {/* Game Title */}
         <div className="text-center space-y-4">
           <div className="relative">
-            <h1 className="text-6xl font-bold bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent animate-pulse">
+            <h1 className="text-6xl font-bold bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-300 bg-clip-text text-transparent animate-moving-gradient drop-shadow-lg">
               FLAPPY
             </h1>
-            <h2 className="text-4xl font-bold text-secondary">STARK</h2>
+            <h2 className="text-4xl font-bold text-white drop-shadow-lg">STARK</h2>
           </div>
-          <p className="text-muted-foreground text-lg">Generate transactions while you fly</p>
+          <p className="text-white text-lg drop-shadow-md">Generate transactions while you fly</p>
         </div>
 
-        {/* Floating Animation Elements */}
-        <div className="relative">
-          <div className="absolute -top-4 -left-4 w-8 h-8 bg-primary/20 rounded-full animate-bounce" />
-          <div className="absolute -top-2 -right-6 w-6 h-6 bg-secondary/20 rounded-full animate-bounce delay-300" />
-          <div className="absolute -bottom-4 left-1/2 w-4 h-4 bg-accent/20 rounded-full animate-bounce delay-700" />
-        </div>
+
 
         {/* Menu Buttons */}
         <Card className="p-6 space-y-4 backdrop-blur-sm bg-card/80 border-primary/20">
@@ -101,20 +179,21 @@ export function MainMenu({ onNavigate }: MainMenuProps) {
           )}
 
           {/* Authentication Section */}
-          <div className="pt-4 border-t border-border">
+          <div className="pt-4 border-t border-blue-200/40">
             {isAuthenticated ? (
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                <div className="flex items-center justify-between p-3 bg-blue-100/30 rounded-lg backdrop-blur-sm">
                   <div className="flex items-center space-x-2">
-                    <User className="h-4 w-4 text-primary" />
-                    <span className="text-sm font-medium">{user?.username}</span>
+                    <User className="h-4 w-4 text-black" />
+                    <span className="text-sm font-medium text-black">{user?.username}</span>
                   </div>
-                  <span className="text-xs text-muted-foreground">Connected</span>
+                  <span className="text-xs text-black">Connected</span>
                 </div>
                 <Button
                   onClick={() => onNavigate("profile")}
                   variant="outline"
-                  className="w-full h-10 text-sm"
+                  className="w-full h-10 text-sm border-black text-black hover:bg-blue-600 hover:text-blue-900 hover:border-blue-900"
+                  style={{ borderColor: 'black' }}
                 >
                   <User className="mr-2 h-4 w-4" />
                   View Profile
@@ -125,7 +204,8 @@ export function MainMenu({ onNavigate }: MainMenuProps) {
                 <Button
                   onClick={() => onNavigate("login")}
                   variant="outline"
-                  className="w-full h-10 text-sm"
+                  className="w-full h-10 text-sm border-black text-black hover:bg-blue-600 hover:text-blue-900 hover:border-blue-900"
+                  style={{ borderColor: 'black' }}
                 >
                   <LogIn className="mr-2 h-4 w-4" />
                   Sign In
@@ -133,7 +213,8 @@ export function MainMenu({ onNavigate }: MainMenuProps) {
                 <Button
                   onClick={() => onNavigate("register")}
                   variant="outline"
-                  className="w-full h-10 text-sm"
+                  className="w-full h-10 text-sm border-black text-black hover:bg-blue-600 hover:text-blue-900 hover:border-blue-900"
+                  style={{ borderColor: 'black' }}
                 >
                   <User className="mr-2 h-4 w-4" />
                   Create Account

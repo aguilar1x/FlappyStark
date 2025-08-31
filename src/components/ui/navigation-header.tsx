@@ -15,15 +15,15 @@ interface NavigationHeaderProps {
 export function NavigationHeader({ title, subtitle, onBack, actions }: NavigationHeaderProps) {
   return (
     <div className="flex items-center justify-between">
-      <Button onClick={onBack} variant="outline" size="sm">
+      <Button onClick={onBack} variant="outline" size="sm" className="border-black text-black hover:bg-blue-600 hover:text-blue-900 hover:border-blue-900" style={{ borderColor: 'black' }}>
         <ArrowLeft className="h-4 w-4 mr-2" />
         Back
       </Button>
       <div className="text-center">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-300 bg-clip-text text-transparent animate-moving-gradient">
           {title}
         </h1>
-        {subtitle && <p className="text-muted-foreground">{subtitle}</p>}
+        {subtitle && <p className="text-white">{subtitle}</p>}
       </div>
       <div className="w-20 flex justify-end">{actions}</div>
     </div>

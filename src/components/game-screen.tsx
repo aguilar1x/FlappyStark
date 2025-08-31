@@ -49,6 +49,7 @@ export function GameScreen({ selectedCharacter, onNavigate }: GameScreenProps) {
   const [currentSpeed, setCurrentSpeed] = useState(2)
   const [currentGap, setCurrentGap] = useState(150)
   const [showTransactionIndicator, setShowTransactionIndicator] = useState(false)
+  const [characterImage, setCharacterImage] = useState<HTMLImageElement | null>(null)
 
   const GRAVITY = 0.5
   const JUMP_FORCE = -8
@@ -57,7 +58,7 @@ export function GameScreen({ selectedCharacter, onNavigate }: GameScreenProps) {
   const BASE_PIPE_SPEED = 2
   const CANVAS_WIDTH = 800
   const CANVAS_HEIGHT = 400
-  const PIPES_PER_LEVEL = 5
+  const PIPES_PER_LEVEL = 3
   const SPEED_INCREMENT = 0.5
   const GAP_DECREASE = 8
 
@@ -136,19 +137,29 @@ export function GameScreen({ selectedCharacter, onNavigate }: GameScreenProps) {
   )
 
   const checkCollision = useCallback((bird: Bird, pipes: Pipe[]): boolean => {
-    if (bird.y <= 0 || bird.y >= CANVAS_HEIGHT - 30) {
+    const birdSize = selectedCharacter === "bird-4" ? 50 : 30
+    
+    // Para MrQuack, ajustar la posición de colisión para que coincida con la imagen
+    const birdLeft = selectedCharacter === "bird-4" ? bird.x - 10 : bird.x
+    const birdRight = birdLeft + birdSize
+    const birdTop = selectedCharacter === "bird-4" ? bird.y - 10 : bird.y
+    const birdBottom = birdTop + birdSize
+    
+    // Colisión con los bordes del canvas
+    if (birdTop <= 0 || birdBottom >= CANVAS_HEIGHT) {
       return true
     }
 
+    // Colisión con los tubos
     for (const pipe of pipes) {
-      if (bird.x + 30 > pipe.x && bird.x < pipe.x + PIPE_WIDTH) {
-        if (bird.y < pipe.topHeight || bird.y + 30 > CANVAS_HEIGHT - pipe.bottomHeight) {
+      if (birdRight > pipe.x && birdLeft < pipe.x + PIPE_WIDTH) {
+        if (birdTop < pipe.topHeight || birdBottom > CANVAS_HEIGHT - pipe.bottomHeight) {
           return true
         }
       }
     }
     return false
-  }, [])
+  }, [selectedCharacter])
 
   const gameLoop = useCallback(() => {
     if (gameState !== "playing") return
@@ -235,21 +246,57 @@ export function GameScreen({ selectedCharacter, onNavigate }: GameScreenProps) {
     const ctx = canvas.getContext("2d")
     if (!ctx) return
 
+    // Fondo de día
     ctx.fillStyle = "#87CEEB"
     ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
 
+    // Tubos verdes
     ctx.fillStyle = "#228B22"
     pipes.forEach((pipe) => {
       ctx.fillRect(pipe.x, 0, PIPE_WIDTH, pipe.topHeight)
       ctx.fillRect(pipe.x, CANVAS_HEIGHT - pipe.bottomHeight, PIPE_WIDTH, pipe.bottomHeight)
     })
 
-    ctx.fillStyle = "#FFD700"
-    ctx.fillRect(bird.x, bird.y, 30, 30)
+    // Pájaro
+    if (characterImage) {
+      // Desactivar suavizado para mantener píxeles nítidos
+      ctx.imageSmoothingEnabled = false
+      
+      // MrQuack más grande
+      if (selectedCharacter === "bird-4") {
+        ctx.drawImage(characterImage, bird.x - 10, bird.y - 10, 50, 50)
+      } else {
+        ctx.drawImage(characterImage, bird.x, bird.y, 30, 30)
+      }
+    } else {
+      // Pájaro dorado por defecto
+      ctx.fillStyle = "#FFD700"
+      ctx.fillRect(bird.x, bird.y, 30, 30)
+    }
 
+    // Suelo marrón
     ctx.fillStyle = "#8B4513"
     ctx.fillRect(0, CANVAS_HEIGHT - 20, CANVAS_WIDTH, 20)
-  }, [bird, pipes])
+  }, [bird, pipes, characterImage])
+
+  // Cargar imagen del personaje
+  useEffect(() => {
+    const characters = [
+      { id: "bird-1", image: "/CavosLogo.png" },
+      { id: "bird-2", image: "/favicon.png" },
+      { id: "bird-3", image: "/SharkPepe.png" },
+      { id: "bird-4", image: "/MrQuack.png" },
+    ]
+    
+    const character = characters.find(c => c.id === selectedCharacter)
+    if (character?.image) {
+      const img = new Image()
+      img.onload = () => setCharacterImage(img)
+      img.src = character.image
+    } else {
+      setCharacterImage(null)
+    }
+  }, [selectedCharacter])
 
 
 
@@ -290,26 +337,26 @@ export function GameScreen({ selectedCharacter, onNavigate }: GameScreenProps) {
   }
 
   return (
-    <div className="min-h-screen p-4">
+    <div className="min-h-screen p-4 bg-gradient-to-b from-slate-900 via-blue-900 to-slate-900">
       <div className="max-w-4xl mx-auto space-y-4">
         <div className="flex items-center justify-between">
-          <Button onClick={() => onNavigate("menu")} variant="outline" size="sm">
+          <Button onClick={() => onNavigate("menu")} variant="outline" size="sm" className="border-black text-black hover:bg-blue-600 hover:text-blue-900 hover:border-blue-900" style={{ borderColor: 'black' }}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Menu
           </Button>
 
           <div className="flex items-center gap-4">
             <div className="text-center">
-              <p className="text-2xl font-bold text-primary">{score}</p>
-              <p className="text-xs text-muted-foreground">Score</p>
+              <p className="text-2xl font-bold text-yellow-300">{score}</p>
+              <p className="text-xs text-white">Score</p>
             </div>
             <div className="text-center">
               <p className="text-2xl font-bold text-secondary">{userTransactions.length}</p>
               <p className="text-xs text-muted-foreground">Transactions</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-bold text-accent">Lv.{difficulty}</p>
-              <p className="text-xs text-muted-foreground">Level</p>
+              <p className="text-2xl font-bold text-yellow-300">Lv.{difficulty}</p>
+              <p className="text-xs text-white">Level</p>
             </div>
           </div>
 
@@ -319,17 +366,19 @@ export function GameScreen({ selectedCharacter, onNavigate }: GameScreenProps) {
               variant="outline"
               size="sm"
               disabled={gameState === "waiting" || gameState === "gameOver"}
+              className="border-black text-black hover:bg-blue-600 hover:text-blue-900 hover:border-blue-900"
+              style={{ borderColor: 'black' }}
             >
               {gameState === "paused" ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
             </Button>
-            <Button onClick={restart} variant="outline" size="sm">
+            <Button onClick={restart} variant="outline" size="sm" className="border-black text-black hover:bg-blue-600 hover:text-blue-900 hover:border-blue-900" style={{ borderColor: 'black' }}>
               <RotateCcw className="h-4 w-4" />
             </Button>
 
           </div>
         </div>
 
-        <Card className="relative overflow-hidden">
+        <Card className="relative overflow-hidden bg-sky-200 border-sky-300">
           <canvas
             ref={canvasRef}
             width={CANVAS_WIDTH}
@@ -340,14 +389,14 @@ export function GameScreen({ selectedCharacter, onNavigate }: GameScreenProps) {
 
           <GameOverlay visible={gameState === "waiting"}>
             <div className="text-6xl">🐦</div>
-            <p className="text-xl font-semibold">Click or press SPACE to fly!</p>
-            <p className="text-sm">Each obstacle passed = 1 transaction</p>
-            <p className="text-xs text-gray-300">Difficulty increases every {PIPES_PER_LEVEL} pipes</p>
+            <p className="text-xl font-semibold text-white">Click or press SPACE to fly!</p>
+            <p className="text-sm text-white">Each obstacle passed = 1 transaction</p>
+            <p className="text-xs text-white">Difficulty increases every {PIPES_PER_LEVEL} pipes</p>
           </GameOverlay>
 
           <GameOverlay visible={gameState === "paused"}>
-            <p className="text-2xl font-semibold">PAUSED</p>
-            <Button onClick={togglePause} variant="secondary">
+            <p className="text-2xl font-semibold text-black">PAUSED</p>
+            <Button onClick={togglePause} variant="secondary" className="bg-blue-600 hover:bg-blue-700 text-white">
               <Play className="h-4 w-4 mr-2" />
               Continue
             </Button>

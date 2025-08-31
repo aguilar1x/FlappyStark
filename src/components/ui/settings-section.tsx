@@ -10,8 +10,8 @@ interface SettingsSectionProps {
 
 export function SettingsSection({ title, icon: Icon, children }: SettingsSectionProps) {
   return (
-    <Card className="p-6 space-y-4">
-      <h2 className="text-xl font-semibold flex items-center gap-2">
+    <Card className="p-6 space-y-4 bg-sky-200 border-sky-300">
+      <h2 className="text-xl font-semibold flex items-center gap-2 text-black">
         {Icon && <Icon className="h-5 w-5" />}
         {title}
       </h2>

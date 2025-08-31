@@ -16,34 +16,39 @@ interface CharacterSelectProps {
 const CHARACTERS = [
   {
     id: "bird-1",
-    name: "Crypto Bird",
-    description: "The classic blockchain bird",
+    name: "Cavos Bird",
+    description: "The classic Cavos bird",
     color: "bg-primary",
+    unlocked: true,
+    image: "/CavosLogo.png",
     requirement: 0,
   },
   {
     id: "bird-2",
-    name: "Stark Eagle",
-    description: "Eagle of Stark",
+    name: "Starknet Bird",
+    description: "Bird of Starknet",
     color: "bg-secondary",
     requirement: 10,
+    image: "/favicon.png",
   },
   {
     id: "bird-3",
-    name: "DeFi Falcon",
-    description: "Falcon of decentralized finance",
+    name: "Shark Pepe",
+    description: "The fierce Shark Pepe",
     color: "bg-accent",
     requirement: 100,
+    image: "/SharkPepe.png",
   },
   {
     id: "bird-4",
-    name: "NFT Phoenix",
-    description: "Unique collectible phoenix",
+    name: "Mr. Quack",
+    description: "The legendary Mr. Quack",
     color: "bg-gradient-to-r from-primary to-secondary",
     requirement: 500,
+    image: "/MrQuack.png",
   },
   {
-    id: "bird-5",
+    id: "bird-5", 
     name: "StarkNet Dragon",
     description: "Legendary dragon of StarkNet",
     color: "bg-gradient-to-r from-purple-500 to-pink-500",
@@ -51,7 +56,7 @@ const CHARACTERS = [
   },
   {
     id: "bird-6",
-    name: "Cavos Master",
+    name: "Cavos Master", 
     description: "Master of all transactions",
     color: "bg-gradient-to-r from-yellow-400 to-orange-500",
     requirement: 5000,
@@ -69,7 +74,7 @@ export function CharacterSelect({ selectedCharacter, onSelectCharacter, onNaviga
   }))
   
   return (
-    <div className="min-h-screen p-4">
+    <div className="min-h-screen p-4 bg-gradient-to-b from-slate-900 via-blue-900 to-slate-900">
       <div className="max-w-4xl mx-auto space-y-6">
         <NavigationHeader title="SELECT CHARACTER" onBack={() => onNavigate("menu")} />
         
@@ -90,8 +95,8 @@ export function CharacterSelect({ selectedCharacter, onSelectCharacter, onNaviga
           {unlockedCharacters.map((character: any) => (
             <Card
               key={character.id}
-              className={`p-6 cursor-pointer transition-all duration-300 hover:scale-105 ${
-                selectedCharacter === character.id ? "ring-2 ring-primary shadow-lg" : "hover:shadow-md"
+              className={`p-6 cursor-pointer transition-all duration-300 hover:scale-105 bg-sky-200 border-sky-300 ${
+                selectedCharacter === character.id ? "ring-2 ring-yellow-300 shadow-lg" : "hover:shadow-md"
               } ${!character.unlocked ? "opacity-60" : ""}`}
               onClick={() => character.unlocked && onSelectCharacter(character.id)}
             >
@@ -99,12 +104,23 @@ export function CharacterSelect({ selectedCharacter, onSelectCharacter, onNaviga
                 {/* Character Avatar */}
                 <div className="flex justify-center">
                   <div
-                    className={`w-24 h-24 rounded-full ${character.color} flex items-center justify-center relative`}
+                    className={`w-24 h-24 rounded-full ${character.color} flex items-center justify-center relative overflow-hidden`}
                   >
-                    <div className="text-4xl">🐦</div>
+                    {character.image ? (
+                      <img 
+                        src={character.image} 
+                        alt={character.name}
+                        className="w-full h-full object-contain"
+                        style={{ 
+                          imageRendering: 'pixelated'
+                        }}
+                      />
+                    ) : (
+                      <div className="text-4xl">🐦</div>
+                    )}
                     {selectedCharacter === character.id && (
-                      <div className="absolute -top-2 -right-2 bg-primary rounded-full p-1">
-                        <Check className="h-4 w-4 text-primary-foreground" />
+                      <div className="absolute -top-2 -right-2 bg-yellow-300 rounded-full p-1">
+                        <Check className="h-4 w-4 text-black" />
                       </div>
                     )}
                   </div>
@@ -112,8 +128,8 @@ export function CharacterSelect({ selectedCharacter, onSelectCharacter, onNaviga
 
                 {/* Character Info */}
                 <div className="text-center space-y-2">
-                  <h3 className="text-xl font-semibold">{character.name}</h3>
-                  <p className="text-muted-foreground text-sm">{character.description}</p>
+                  <h3 className="text-xl font-semibold text-black">{character.name}</h3>
+                  <p className="text-black text-sm">{character.description}</p>
 
                   {!character.unlocked && (
                     <div className="mt-3 p-2 bg-muted rounded-lg">
@@ -138,7 +154,12 @@ export function CharacterSelect({ selectedCharacter, onSelectCharacter, onNaviga
                   <Button
                     onClick={() => onSelectCharacter(character.id)}
                     variant={selectedCharacter === character.id ? "default" : "outline"}
-                    className="w-full"
+                    className={`w-full ${
+                      selectedCharacter === character.id 
+                        ? "bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white" 
+                        : "border-black text-black hover:bg-blue-600 hover:text-blue-900 hover:border-blue-900"
+                    }`}
+                    style={selectedCharacter !== character.id ? { borderColor: 'black' } : {}}
                   >
                     {selectedCharacter === character.id ? "Selected" : "Select"}
                   </Button>
