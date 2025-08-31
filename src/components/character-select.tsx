@@ -49,15 +49,16 @@ const CHARACTERS = [
   },
   {
     id: "bird-5", 
-    name: "StarkNet Dragon",
-    description: "Legendary dragon of StarkNet",
+    name: "StarkGlass",
+    description: "Almost invisible like a Ninja",
     color: "bg-gradient-to-r from-purple-500 to-pink-500",
     requirement: 1000,
+    image: "/stark.png",
   },
   {
     id: "bird-6",
-    name: "Cavos Master", 
-    description: "Master of all transactions",
+    name: "Secret", 
+    description: "A LEGEND",
     color: "bg-gradient-to-r from-yellow-400 to-orange-500",
     requirement: 5000,
   },
@@ -104,19 +105,24 @@ export function CharacterSelect({ selectedCharacter, onSelectCharacter, onNaviga
                 {/* Character Avatar */}
                 <div className="flex justify-center">
                   <div
-                    className={`w-24 h-24 rounded-full ${character.color} flex items-center justify-center relative overflow-hidden`}
+                    className={`w-24 h-24 rounded-full ${character.image ? 'bg-white' : character.id === 'bird-6' ? 'bg-black' : character.color} flex items-center justify-center relative overflow-hidden`}
                   >
                     {character.image ? (
-                      <img 
-                        src={character.image} 
-                        alt={character.name}
-                        className="w-full h-full object-contain"
-                        style={{ 
-                          imageRendering: 'pixelated'
-                        }}
-                      />
+                      <div 
+                        className="w-full h-full rounded-full flex items-center justify-center"
+                        style={{ backgroundColor: 'white' }}
+                      >
+                        <img 
+                          src={character.image} 
+                          alt={character.name}
+                          className="w-full h-full object-contain"
+                          style={{ 
+                            imageRendering: 'pixelated'
+                          }}
+                        />
+                      </div>
                     ) : (
-                      <div className="text-4xl">🐦</div>
+                      <div className="text-4xl">🐱</div>
                     )}
                     {selectedCharacter === character.id && (
                       <div className="absolute -top-2 -right-2 bg-yellow-300 rounded-full p-1">

@@ -286,6 +286,8 @@ export function GameScreen({ selectedCharacter, onNavigate }: GameScreenProps) {
       { id: "bird-2", image: "/favicon.png" },
       { id: "bird-3", image: "/SharkPepe.png" },
       { id: "bird-4", image: "/MrQuack.png" },
+      { id: "bird-5", image: "/stark.png" },
+      { id: "bird-6", image: "/nyan.png" },
     ]
     
     const character = characters.find(c => c.id === selectedCharacter)
